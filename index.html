@@ -1,42 +1,479 @@
-<!doctype html>
-<html dir="ltr" lang="en" class="loading"
-    webui-refresh-2026 rounded-icons webui-rounded-icons>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="color-scheme" content="light dark">
-  <base href="chrome://downloads">
-  <title>Download history</title>
-  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
-  <style>
-    html {
-      /* Remove 300ms delay for 'click' event, when using touch interface. */
-      touch-action: manipulation;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chinese & English Tutoring with Petra</title>
+<meta name="description" content="Personalised Chinese (Mandarin) and English tutoring with Petra. HSK 1–4 preparation, online and face-to-face lessons. Enquire on WhatsApp." />
+<style>
+  :root {
+    --primary: #b5322f;
+    --primary-dark: #8e2623;
+    --accent: #f4c542;
+    --ink: #22252a;
+    --muted: #5b6068;
+    --bg: #fdfaf6;
+    --card: #ffffff;
+    --line: #ece5dc;
+    --radius: 14px;
+    --shadow: 0 6px 24px rgba(34, 37, 42, 0.08);
+    --max: 1080px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink); background: var(--bg); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { line-height: 1.2; margin: 0 0 .5em; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); }
+  h3 { font-size: 1.2rem; }
+  p { margin: 0 0 1em; }
+  a { color: var(--primary); }
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+  section { padding: 64px 0; }
+  section:nth-of-type(even) { background: #fff; }
 
-    @media (prefers-color-scheme: dark) {
-      html {
-        background: var(--md-background-color);
-      }
+  header {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(253, 250, 246, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 20px; max-width: var(--max); margin: 0 auto;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; color: var(--ink); }
+  .brand .mark {
+    display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px;
+    background: var(--primary); color: #fff; font-size: 1.05rem; letter-spacing: -.5px;
+  }
+  .brand small { display: block; font-weight: 500; color: var(--muted); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+  .nav-links { display: flex; gap: 22px; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--muted); font-size: .95rem; font-weight: 500;
+    padding: 4px 0; border-bottom: 2px solid transparent; transition: .2s;
+  }
+  .nav-links a:hover { color: var(--primary); border-color: var(--primary); }
+  .menu-toggle { display: none; background: none; border: 0; font-size: 1.6rem; color: var(--ink); cursor: pointer; padding: 4px 8px; }
+  @media (max-width: 820px) {
+    .menu-toggle { display: block; }
+    .nav-links {
+      position: absolute; top: 100%; left: 0; right: 0;
+      flex-direction: column; align-items: stretch; gap: 0;
+      background: #fff; border-bottom: 1px solid var(--line);
+      max-height: 0; overflow: hidden; transition: max-height .3s ease;
     }
+    .nav-links.open { max-height: 460px; }
+    .nav-links a { padding: 14px 20px; border-bottom: 1px solid var(--line); }
+    .nav-links a:last-child { border-bottom: 0; }
+  }
 
-    html:not(.loading),
-    body {
-      height: 100%;
-    }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--primary); color: #fff; text-decoration: none;
+    font-weight: 600; font-size: .98rem; padding: 13px 22px; border-radius: 999px;
+    border: 0; cursor: pointer; transition: background .2s, transform .1s;
+    box-shadow: 0 6px 18px rgba(181, 50, 47, .25);
+  }
+  .btn:hover { background: var(--primary-dark); }
+  .btn:active { transform: translateY(1px); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); box-shadow: none; font-weight: 600; }
+  .btn.ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn.whatsapp { background: #25d366; box-shadow: 0 6px 18px rgba(37, 211, 102, .3); }
+  .btn.whatsapp:hover { background: #1eb659; }
 
-    body {
-      display: flex;
-      margin: 0;
-    }
+  .hero {
+    background:
+      radial-gradient(circle at 12% 20%, rgba(244, 197, 66, .25), transparent 40%),
+      radial-gradient(circle at 88% 80%, rgba(181, 50, 47, .12), transparent 45%),
+      var(--bg);
+    padding: 80px 0 72px;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }
+  .eyebrow { display: inline-block; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-bottom: 14px; }
+  .hero p.lead { font-size: 1.12rem; color: var(--muted); max-width: 46ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .hero-card { background: var(--card); border-radius: 20px; padding: 30px; box-shadow: var(--shadow); border: 1px solid var(--line); }
+  .hero-card .stat { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--line); }
+  .hero-card .stat:last-child { border-bottom: 0; }
+  .hero-card .stat strong { color: var(--primary); }
+  @media (max-width: 780px) { .hero { padding: 52px 0; } .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
 
-    html[webui-refresh-2026] {
-      background: var(--color-webui-page-background);
-    }
-  </style>
+  .grid { display: grid; gap: 24px; }
+  .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; box-shadow: 0 2px 10px rgba(34, 37, 42, .04); }
+  .card .icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: rgba(181, 50, 47, .08); color: var(--primary); font-size: 1.3rem; margin-bottom: 14px; }
+  .card h3 { margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { margin: 0; padding-left: 1.1em; color: var(--muted); }
+  .card li { margin-bottom: 6px; }
+  @media (max-width: 820px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+
+  .section-intro { max-width: 640px; margin-bottom: 36px; }
+  .section-intro p { color: var(--muted); margin-bottom: 0; }
+
+  /* About — text only, no photo */
+  .about-text { max-width: 760px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .badge { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; font-size: .85rem; color: var(--muted); font-weight: 500; }
+
+  .package { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; display: flex; flex-direction: column; transition: transform .15s, box-shadow .15s; }
+  .package:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .package.featured { border-color: var(--primary); box-shadow: 0 8px 30px rgba(181, 50, 47, .12); position: relative; }
+  .package .tag { position: absolute; top: -12px; left: 24px; background: var(--primary); color: #fff; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
+  .package h3 { margin-bottom: 4px; }
+  .package .price { font-size: 1.05rem; color: var(--primary); font-weight: 700; margin-bottom: 14px; }
+  .package ul { list-style: none; margin: 0 0 22px; padding: 0; color: var(--muted); }
+  .package li { padding: 6px 0 6px 24px; position: relative; }
+  .package li::before { content: "✓"; position: absolute; left: 0; color: var(--primary); font-weight: 700; }
+  .package .btn { margin-top: auto; justify-content: center; }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  @media (max-width: 780px) { .contact-grid { grid-template-columns: 1fr; gap: 28px; } }
+  .contact-list { list-style: none; padding: 0; margin: 0; }
+  .contact-list li { display: flex; gap: 14px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .contact-list li:last-child { border-bottom: 0; }
+  .contact-list .ico { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(181, 50, 47, .08); color: var(--primary); font-size: 1.1rem; }
+  .contact-list strong { display: block; font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 2px; }
+  .contact-list a { color: var(--ink); text-decoration: none; font-weight: 500; }
+  .contact-list a:hover { color: var(--primary); }
+  .contact-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); }
+
+  footer { background: #1f2226; color: #c9ccd1; padding: 40px 0 26px; font-size: .92rem; }
+  footer a { color: #f4c542; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .footer-grid { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .footer-grid .brand { color: #fff; }
+  .footer-grid .brand small { color: #9aa0a8; }
+  .footer-bottom { margin-top: 26px; padding-top: 18px; border-top: 1px solid #33373d; text-align: center; color: #8b9099; font-size: .85rem; }
+
+  .floating-wa {
+    position: fixed; right: 20px; bottom: 20px; z-index: 60;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: #25d366; color: #fff; display: grid; place-items: center;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, .45);
+    text-decoration: none; transition: transform .15s;
+  }
+  .floating-wa:hover { transform: scale(1.06); }
+  .floating-wa svg { width: 30px; height: 30px; fill: #fff; }
+  @media (max-width: 600px) {
+    section { padding: 48px 0; }
+    .floating-wa { width: 52px; height: 52px; right: 16px; bottom: 16px; }
+    .floating-wa svg { width: 26px; height: 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+</style>
 </head>
 <body>
-  <downloads-manager></downloads-manager>
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-  <script type="module" src="downloads.js"></script>
+
+<header>
+  <nav class="nav" aria-label="Main navigation">
+    <a class="brand" href="#top">
+      <span class="mark" aria-hidden="true">P</span>
+      <span>Petra Tutoring<small>Chinese &amp; English</small></span>
+    </a>
+    <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks">
+      <a href="#home">Home</a>
+      <a href="#chinese">Chinese</a>
+      <a href="#english">English</a>
+      <a href="#lessons">Lessons</a>
+      <a href="#about">About</a>
+      <a href="#packages">Packages</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Personalised tutoring · Online &amp; in person</span>
+        <h1>Learn Chinese or English with Petra</h1>
+        <p class="lead">
+          Friendly, structured lessons for every level — from beginner Mandarin
+          and HSK 1–4 preparation to confident everyday English. Study at your
+          own pace, online or face-to-face.
+        </p>
+        <div class="hero-actions">
+          <a class="btn whatsapp" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20tutoring." target="_blank" rel="noopener">
+            💬 Enquire on WhatsApp
+          </a>
+          <a class="btn ghost" href="#packages">View packages</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="At a glance">
+        <h3 style="margin-bottom:14px;">At a glance</h3>
+        <div class="stat"><span>Languages taught</span><strong>Chinese &amp; English</strong></div>
+        <div class="stat"><span>HSK preparation</span><strong>Levels 1–4</strong></div>
+        <div class="stat"><span>Lesson format</span><strong>Online &amp; in person</strong></div>
+        <div class="stat"><span>Pricing</span><strong>On enquiry</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="chinese">
+  <div class="wrap">
+    <div class="section-intro">
+      <h2>Chinese lessons &amp; HSK 1–4 preparation</h2>
+      <p>
+        Whether you're starting from zero or working toward an HSK certificate,
+        lessons are built around your goals — speaking, listening, reading and
+        writing Mandarin with confidence.
+      </p>
+    </div>
+    <div class="grid cols-3">
+      <div class="card">
+        <div class="icon" aria-hidden="true">汉</div>
+        <h3>Beginner Mandarin</h3>
+        <p>Build a solid foundation in tones, pinyin, essential vocabulary and everyday conversation.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🎯</div>
+        <h3>HSK 1–4 Preparation</h3>
+        <p>Targeted practice for each HSK level, with mock questions, vocabulary drills and exam strategy.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🗣️</div>
+        <h3>Conversational Chinese</h3>
+        <p>Practise real-life speaking for travel, work, study or simply connecting with others.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="english">
+  <div class="wrap">
+    <div class="section-intro">
+      <h2>English tutoring</h2>
+      <p>
+        Clear, supportive English lessons that build confidence in speaking,
+        writing and comprehension — tailored to your level and purpose.
+      </p>
+    </div>
+    <div class="grid cols-3">
+      <div class="card">
+        <div class="icon" aria-hidden="true">A</div>
+        <h3>General English</h3>
+        <p>Grammar, vocabulary and communication skills for everyday life and work.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">✍️</div>
+        <h3>Writing &amp; Reading</h3>
+        <p>Improve essays, emails and comprehension with guided practice and feedback.</p>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🎓</div>
+        <h3>Exam &amp; Study Support</h3>
+        <p>Focused help for school, university or exam preparation goals.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lessons">
+  <div class="wrap">
+    <div class="section-intro">
+      <h2>Online &amp; face-to-face lessons</h2>
+      <p>Choose the format that fits your schedule and learning style.</p>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="icon" aria-hidden="true">💻</div>
+        <h3>Online lessons</h3>
+        <p>Join from anywhere via video call. Share materials, practise live and receive homework and feedback between sessions.</p>
+        <ul>
+          <li>Flexible scheduling</li>
+          <li>No travel needed</li>
+          <li>Digital resources provided</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="icon" aria-hidden="true">🤝</div>
+        <h3>Face-to-face lessons</h3>
+        <p>In-person sessions for focused, interactive learning with immediate feedback and hands-on practice.</p>
+        <ul>
+          <li>Ideal for conversation practice</li>
+          <li>Printed materials available</li>
+          <li>Location confirmed on enquiry</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="about-text">
+      <h2>About the tutor</h2>
+      <p>
+        Hi, I'm Petra! I teach Chinese and English with a patient, encouraging
+        approach that meets students where they are. My lessons are structured
+        and practical, with plenty of speaking practice and clear feedback so
+        you can see your progress.
+      </p>
+      <p>
+        Whether you're preparing for HSK, improving your English for work, or
+        simply learning something new, I'll help you build confidence step by step.
+      </p>
+      <div class="badges">
+        <span class="badge">Chinese (Mandarin)</span>
+        <span class="badge">HSK 1–4</span>
+        <span class="badge">English</span>
+        <span class="badge">Online &amp; in person</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="packages">
+  <div class="wrap">
+    <div class="section-intro">
+      <h2>Lesson packages</h2>
+      <p>
+        Packages are tailored to your level, goals and schedule. Pricing is
+        available on enquiry — get in touch and we'll find the best fit for you.
+      </p>
+    </div>
+    <div class="grid cols-3">
+      <div class="package">
+        <h3>Single Lessons</h3>
+        <div class="price">Pricing on enquiry</div>
+        <ul>
+          <li>Perfect for trying a lesson</li>
+          <li>Flexible subject focus</li>
+          <li>Online or in person</li>
+        </ul>
+        <a class="btn ghost" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20single%20lessons." target="_blank" rel="noopener">Enquire</a>
+      </div>
+      <div class="package featured">
+        <span class="tag">Popular</span>
+        <h3>HSK 1–4 Bundle</h3>
+        <div class="price">Pricing on enquiry</div>
+        <ul>
+          <li>Structured exam preparation</li>
+          <li>Mock questions &amp; feedback</li>
+          <li>Vocabulary &amp; strategy support</li>
+        </ul>
+        <a class="btn" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20HSK%20packages." target="_blank" rel="noopener">Enquire</a>
+      </div>
+      <div class="package">
+        <h3>Regular Tutoring</h3>
+        <div class="price">Pricing on enquiry</div>
+        <ul>
+          <li>Weekly or bi-weekly lessons</li>
+          <li>Chinese or English focus</li>
+          <li>Progress check-ins</li>
+        </ul>
+        <a class="btn ghost" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20regular%20tutoring." target="_blank" rel="noopener">Enquire</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-intro">
+      <h2>Get in touch</h2>
+      <p>Ready to start or have a question? Message on WhatsApp or send an email — I'll get back to you.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card">
+        <ul class="contact-list">
+          <li>
+            <span class="ico" aria-hidden="true">💬</span>
+            <div>
+              <strong>WhatsApp</strong>
+              <a href="https://wa.me/233240980342" target="_blank" rel="noopener">024 098 0342</a>
+            </div>
+          </li>
+          <li>
+            <span class="ico" aria-hidden="true">✉️</span>
+            <div>
+              <strong>Email</strong>
+              <a href="mailto:petragyimah@gmail.com">petragyimah@gmail.com</a>
+            </div>
+          </li>
+          <li>
+            <span class="ico" aria-hidden="true">📍</span>
+            <div>
+              <strong>Lessons</strong>
+              Online &amp; face-to-face (location confirmed on enquiry)
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="contact-card" style="display:flex; flex-direction:column; justify-content:center;">
+        <h3>Prefer to message directly?</h3>
+        <p style="color:var(--muted);">
+          Tap the button below to start a WhatsApp conversation about your goals,
+          level and preferred schedule.
+        </p>
+        <a class="btn whatsapp" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20tutoring." target="_blank" rel="noopener" style="align-self:flex-start;">
+          💬 Start WhatsApp enquiry
+        </a>
+        <p style="margin:16px 0 0; color:var(--muted); font-size:.9rem;">
+          Or email <a href="mailto:petragyimah@gmail.com">petragyimah@gmail.com</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="#top">
+          <span class="mark" aria-hidden="true">P</span>
+          <span>Petra Tutoring<small>Chinese &amp; English</small></span>
+        </a>
+        <p style="max-width:36ch; margin-top:14px; color:#9aa0a8;">
+          Personalised Chinese and English tutoring — online and face-to-face.
+        </p>
+      </div>
+      <div>
+        <p style="margin:0 0 8px; color:#fff; font-weight:600;">Contact</p>
+        <p style="margin:0 0 6px;"><a href="https://wa.me/233240980342" target="_blank" rel="noopener">WhatsApp: 024 098 0342</a></p>
+        <p style="margin:0;"><a href="mailto:petragyimah@gmail.com">petragyimah@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © <span id="year"></span> Chinese &amp; English Tutoring with Petra. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<a class="floating-wa" href="https://wa.me/233240980342?text=Hi%20Petra%2C%20I%27d%20like%20to%20enquire%20about%20tutoring." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M17.5 14.4c-.3-.15-1.7-.85-2-.95-.25-.1-.44-.15-.63.15-.2.3-.72.95-.88 1.15-.16.2-.32.22-.6.08-.28-.15-1.2-.44-2.28-1.4-.85-.75-1.42-1.68-1.58-1.96-.16-.28-.02-.43.12-.57.13-.13.28-.32.42-.48.14-.16.19-.28.28-.46.1-.19.05-.35-.02-.5-.07-.14-.63-1.53-.86-2.09-.23-.55-.46-.48-.63-.49h-.54c-.19 0-.5.07-.76.35-.26.28-1 .97-1 2.37 0 1.4 1.02 2.75 1.16 2.94.14.19 2 3.05 4.85 4.28.68.29 1.2.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.34z"/>
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.13h-.01c-1.52 0-3.01-.41-4.31-1.18l-.31-.18-3.2.84.85-3.12-.2-.32a8.19 8.19 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.3-8.23 8.3z"/>
+  </svg>
+</a>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const toggle = document.querySelector('.menu-toggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    const isOpen = links.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', isOpen);
+  });
+  links.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      links.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+</script>
+
 </body>
 </html>
